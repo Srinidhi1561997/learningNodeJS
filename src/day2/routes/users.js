@@ -1,79 +1,81 @@
+const validation = require('../services/validation');
+const handlers = require('../services/middleware');
+
 const userRoutes = (app, fs) => {
-    // variables
-    const dataPath = './data/users.json';
-  
-    // READ
-    app.get('/getUsers', (req, res) => {
-      fs.readFile(dataPath, 'utf8', (err, data) => {
-        if (err) {
-          throw err;
-        }
-        res.send(JSON.parse(data));
-      });
-    });
+
+    app.get('/users/getUser/:email?', validation.validateGet, handlers.getUserMethod);
+    app.post('/users/createUser', validation.validateCreate, handlers.createUserMethod);
+    app.put('/users/updateUser/:email', validation.validateUpdate, handlers.updateUserMethod);
+    app.delete('/users/removeUser/:email', validation.validateDelete, handlers.removeUserMethod);
+//     app.get('/getUsers', (req, res) => {
+//       service.readFile(data => {
+//         res.send(data);
+//       },true,dataPath);
+//     });
+
+//   app.get("/user/:email?", (req, res) => {
+//     service.readFile(data => {
+//       if (req.params.email) {
+//         const user = data.find((c) => c.email === req.params.email);
+//         if (!user)
+//           res
+//             .status(404)
+//             .send(
+//               '<h2 style="font-family: Malgun Gothic; color: darkred;">Ooops... Cant find what you are looking for!</h2>'
+//             );
+//         res.send(JSON.stringify(user));
+//       } else res.send(data);
+//     },true,dataPath);
+//   });
+
+//   //The addUser endpoint
+//   app.post("/addUser", (req, res) => {
+//     service.readFile(data=> {
+//       const addUser = data;
+//       addUser.push(req.body);
+//       service.writeFile(JSON.stringify(addUser, null, 2), () => {
+//         res.status(200).send('new user added');
+//       },dataPath);
+//     },true,dataPath);
+//   });
+
+//   //UPDATE Request Handler
+//   app.put("/editUser/:email", (req, res) => {
+//     service.readFile(data => {
+//       const user = data.find((c) => c.email === req.params.email);
+//       if (!user)
+//         res
+//           .status(404)
+//           .send(
+//             '<h2 style="font-family: Malgun Gothic; color: darkred;">Ooops... Cant edit what you are looking for!</h2>'
+//           );
+//       const updatedUser = data.map((item, index) => {
+//         if (item.email == user.email) {
+//           if (req.body.firstname) item.firstname = req.body.firstname;
+//           if (req.body.lastname) item.lastname = req.body.lastname;
+//           return item;
+//         }
+//         return item;
+//       });
+//       service.writeFile(JSON.stringify(updatedUser), () => {
+//         res.status(200).send(' user updated successfully');
+//       },dataPath);
+//       res.send(user);
+//     },true,dataPath);
+//   });
+
+//   app.delete("/deleteUser/:email", (req, res) => {
+//     service.readFile(data => {
+//       const deletedUser = data.filter(
+//         (item, index) => item.email !== req.params.email
+//       );
+//       service.writeFile(JSON.stringify(deletedUser), () => {
+//         res.status(200).send(' user deleted successfully');
+//       },dataPath);
+//     },true,dataPath);
+//   });
+};
+
+module.exports = userRoutes;
 
 
-    app.get('/user/:email?', (req, res) =>{
-        // First retrieve existing user list
-        console.log('create new user');
-        fs.readFile(dataPath, 'utf8', (err, data) => {
-            if(req.params.email){
-                const user = JSON.parse(data).find(c => c.email === req.params.email);
-                if (!user) res.status(404).send('<h2 style="font-family: Malgun Gothic; color: darkred;">Ooops... Cant find what you are looking for!</h2>');
-                res.send( JSON.stringify(user));
-            } else res.send(JSON.parse(data));
-           
-        });
-     });
-
-    
-    //The addUser endpoint
-    app.post('/addUser',(req, res)=>{
-        fs.readFile(dataPath, 'utf8', (err, data)=>{
-            const addUser = JSON.parse(data);
-            addUser.push(req.body);
-            fs.writeFile(dataPath, JSON.stringify(addUser), (errWrite)=> {
-                if (errWrite) throw errWrite;
-                console.log('user is added successfully.');
-              })
-            res.end(data);
-        });
-    });
-
-    //UPDATE Request Handler
-    app.put('/editUser/:email', (req, res) => {
-        fs.readFile(dataPath, 'utf8', (err, data) => {
-                const user = JSON.parse(data).find(c => c.email === req.params.email);
-                if (!user) res.status(404).send('<h2 style="font-family: Malgun Gothic; color: darkred;">Ooops... Cant edit what you are looking for!</h2>');
-                user.firstname = req.body.firstname;
-                user.lastname = req.body.lastname;
-                const updatedUser = JSON.parse(data).map((item, index)=>{
-                    if(item.id==user.id){
-                        if(user.firstname) item.firstname=user.firstname;
-                        if(user.lastname) item.lastname=user.lastname;
-                        return item;
-                    } return item;
-                });
-                fs.writeFile(dataPath, JSON.stringify(updatedUser), (errWrite)=> {
-                      if (errWrite) throw errWrite;
-                      console.log('File is updated successfully.');
-                    })
-                res.send(user);
-        });
-    });
-
-
-    app.delete('/deleteUser/:email', (req, res) => {
-        fs.readFile(dataPath, 'utf8', (err, data) => {
-            const deletedUser = JSON.parse(data).filter((item, index)=>item.email !== req.params.email)
-            console.log('deleted user is', deletedUser, JSON.parse(data))
-            fs.writeFile(dataPath, JSON.stringify(deletedUser), (errDelete)=> {
-                    if (errDelete) throw errDelete;
-                    console.log('user deleted successfully.');
-                })
-            res.send(data);
-        });
-    });
-  };
-  
-  module.exports = userRoutes;
