@@ -11,6 +11,5 @@ exports.writeFile = (
     fileData,
     filePath,
   ) => {
-   const value= fs.writeFileSync(filePath,JSON.stringify(fileData));
-   console.log('written', value);
+    fs.writeFileSync(filePath,JSON.stringify(fileData));
   };
