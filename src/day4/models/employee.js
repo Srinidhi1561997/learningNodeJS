@@ -28,6 +28,8 @@ const Employee = sequelize.define("Employee", {
   //     key: 'id'
   //   }
   // }
+},{
+  timestamps: false
 });
 
 module.exports = Employee;
